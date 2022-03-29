@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/aws/aws-sdk-go-v2 v1.16.0
 	github.com/aws/aws-sdk-go-v2/config v1.15.1
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.26.1
 )
 
@@ -22,4 +23,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.1 // indirect
 	github.com/aws/smithy-go v1.11.1 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 )
