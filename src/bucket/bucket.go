@@ -54,3 +54,28 @@ func UploadObject(filename string, client *s3.Client, file *os.File) string {
 	}
 	return result.UploadID
 }
+
+func DownloadObject(filename string, client *s3.Client) int64 {
+	file, err := os.Create("download.pdf")
+	if err != nil {
+		log.Fatalf("Error creating file: %s", err.Error())
+		return 0
+	}
+
+	defer file.Close()
+
+	obj := s3.GetObjectInput{
+		Bucket: aws.String(BUCKET),
+		Key:    aws.String(filename),
+	}
+
+	downloader := manager.NewDownloader(client)
+	numBytes, err := downloader.Download(context.TODO(), file, &obj)
+
+	if err != nil {
+		log.Fatalf("Error downloading a file: %s", err.Error())
+		return 0
+	}
+
+	return numBytes
+}
