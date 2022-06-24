@@ -21,6 +21,9 @@ func ReadAllFiles(c *gin.Context) {
 }
 
 func UploadFile(c *gin.Context) {
+	//Todo:
+	//	1. require file name in the form fields
+	//	2. select the extension for each mime type
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Fatal(err)
