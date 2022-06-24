@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"img-service/src/bucket"
 	"img-service/src/crud"
@@ -25,19 +26,34 @@ func UploadFile(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	c.SaveUploadedFile(file, "./temp/example.pdf")
+	timestamp := time.Now().Unix()
+
+	dst := fmt.Sprint("./temp/file_%v.pdf", timestamp)
+	c.SaveUploadedFile(file, dst)
 
 	var newFile models.FileBase
-	newFile.Name = file.Filename
+	newFile.Name = fmt.Sprintf("%v_%s", timestamp, file.Filename)
 	newFile.Size = uint(file.Size)
 	newFile.Ext = file.Header.Get("Content-Type")
 
-	toUpload, _ := os.Open("./temp/example.pdf")
+	// open file and upload to aws
+	toUpload, _ := os.Open(dst)
 
 	client := bucket.GetClient()
 	UploadID := bucket.UploadObject(newFile.Name, client, toUpload)
 
-	log.Printf("type %T %v\n", toUpload, UploadID)
+	log.Printf("type %T %T\n", toUpload, UploadID)
+
+	//close and remove
+	err = toUpload.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.Remove(dst)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	c.JSON(http.StatusOK, crud.CreateFile(newFile))
 }
